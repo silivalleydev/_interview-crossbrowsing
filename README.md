@@ -1,70 +1,271 @@
-# Getting Started with Create React App
+# 크로스 브라우저 테스팅
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- [크로스 브라우저 테스팅](#크로스-브라우저-테스팅)
+  - [크로스 브라우저 이슈란?](#크로스-브라우저-이슈란)
+    - [주요 원인](#주요-원인)
+      - [1. **브라우저 엔진의 차이**](#1-브라우저-엔진의-차이)
+      - [2. **CSS 스타일 해석 차이**](#2-css-스타일-해석-차이)
+      - [3. **JavaScript 동작 차이**](#3-javascript-동작-차이)
+      - [4. **HTML5와 CSS3 지원 차이**](#4-html5와-css3-지원-차이)
+      - [5. **플러그인 및 확장 프로그램 차이**](#5-플러그인-및-확장-프로그램-차이)
+      - [6. **브라우저 버전**](#6-브라우저-버전)
+      - [7. **모바일 브라우저와 데스크톱 브라우저의 차이**](#7-모바일-브라우저와-데스크톱-브라우저의-차이)
+  - [해결 방법](#해결-방법)
+  - [E2E Test란?](#e2e-test란)
+    - [프론트엔드 관점 E2E 테스트의 주요 목적](#프론트엔드-관점-e2e-테스트의-주요-목적)
+    - [E2E 테스트의 주요 사례](#e2e-테스트의-주요-사례)
+  - [E2E 테스팅 도구 Selenium](#e2e-테스팅-도구-selenium)
+  - [Selenium이란?](#selenium이란)
+    - [주요 기능](#주요-기능)
+    - [Selenium의 구성 요소](#selenium의-구성-요소)
+    - [Selenium의 장점](#selenium의-장점)
+    - [Selenium의 단점](#selenium의-단점)
+    - [Selenium 사용 사례](#selenium-사용-사례)
+    - [Selenium을 활용한 기본 워크플로우](#selenium을-활용한-기본-워크플로우)
+  - [파일 위치 구조](#파일-위치-구조)
 
-## Available Scripts
+## 크로스 브라우저 이슈란?
+크로스 브라우저 이슈(Cross-Browser Issue)는 웹 애플리케이션이나 웹사이트가 여러 웹 브라우저에서 동일하게 작동하지 않거나,  
+디자인 및 기능이 일관되지 않게 보이는 문제를 말합니다. 이는 브라우저 간의 차이로 인해 발생합니다.
 
-In the project directory, you can run:
 
-### `npm start`
+### 주요 원인
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+#### 1. **브라우저 엔진의 차이**
+- 브라우저는 각각 다른 렌더링 엔진을 사용합니다.
+  - **크롬/엣지**: Blink
+  - **파이어폭스**: Gecko
+  - **사파리**: WebKit
+- 렌더링 엔진은 HTML, CSS, JavaScript를 처리하는 방식이 다르기 때문에 스타일이나 기능이 다르게 보일 수 있습니다.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+#### 2. **CSS 스타일 해석 차이**
+- 브라우저마다 CSS 속성이나 값을 다르게 해석할 수 있습니다.
+  - 예: Flexbox, Grid 레이아웃 등.
+- 기본 스타일(마진, 패딩)이 브라우저별로 다를 수 있습니다.
 
-### `npm test`
+#### 3. **JavaScript 동작 차이**
+- JavaScript API가 브라우저마다 다르게 동작하거나, 일부 브라우저에서 지원되지 않을 수 있습니다.
+  - 예: `fetch` API는 오래된 브라우저에서 지원되지 않을 수 있음.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### 4. **HTML5와 CSS3 지원 차이**
+- 최신 웹 표준(HTML5, CSS3)을 모든 브라우저가 동일하게 지원하지 않을 수 있습니다.
+- 일부 브라우저는 특정 기능을 아직 지원하지 않거나, 부분적으로만 지원합니다.
 
-### `npm run build`
+#### 5. **플러그인 및 확장 프로그램 차이**
+- 브라우저에 설치된 플러그인이나 확장 프로그램이 웹사이트 동작에 영향을 미칠 수 있습니다.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### 6. **브라우저 버전**
+- 오래된 브라우저(예: Internet Explorer)는 최신 웹 기술을 제대로 지원하지 못할 수 있습니다.
+- 최신 브라우저에서도 업데이트에 따라 기능이 다르게 작동할 가능성이 있습니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### 7. **모바일 브라우저와 데스크톱 브라우저의 차이**
+- 모바일 브라우저는 터치 인터페이스와 작은 화면에 최적화되어 있어, 특정 기능이 다르게 작동하거나 누락될 수 있습니다.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 해결 방법
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. **표준 준수**
+   - 최신 웹 표준(HTML5, CSS3)을 준수하여 개발.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. **폴리필(Polyfill) 사용**
+   - 오래된 브라우저에서 지원하지 않는 기능을 구현하기 위해 JavaScript 라이브러리 사용.
+   - 예: `babel`, `modernizr`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. **브라우저별 테스트**
+   - 주요 브라우저에서 웹사이트를 테스트.
+     - 크롬, 파이어폭스, 사파리, 엣지 등.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. **리셋 CSS 또는 노멀라이즈 CSS 사용**
+   - 브라우저 간 기본 스타일 차이를 줄이기 위해 사용.
 
-## Learn More
+5. **반응형 디자인**
+   - 모바일 및 데스크톱 환경에서 일관된 사용자 경험을 제공.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+6. **로그 및 디버깅 도구 활용**
+   - 브라우저 개발자 도구를 사용하여 문제를 추적하고 수정.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## E2E Test란?
+프론트엔드 관점의 E2E(End-to-End) 테스트는 주로 사용자의 브라우저 상호작용과  
+애플리케이션의 UI 흐름이 예상대로 동작하는지 확인하는 데 초점을 맞춘다.  
+즉, 사용자가 실제로 클릭하거나, 입력하거나, 페이지를 탐색하는 것과 같은 사용자 시나리오를 테스트한다.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 프론트엔드 관점 E2E 테스트의 주요 목적
+1. UI 동작 검증: 버튼 클릭, 폼 제출, 드롭다운 메뉴, 모달 창 등 UI 요소의 동작이 올바른지 확인.
+2. 사용자 경험(UX) 확인: 사용자가 페이지를 탐색할 때, 기대하는 결과가 제공되는지 확인.
+3. 브라우저 호환성 확인: 여러 브라우저(Chrome, Firefox, Edge, Safari 등)에서 동일하게 작동하는지 테스트.
+4. 서버와의 통합 확인: API 호출, 데이터 렌더링 등 백엔드와의 통합이 제대로 이루어지는지 검증.
 
-### Analyzing the Bundle Size
+### E2E 테스트의 주요 사례
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. 로그인 시나리오
+사용자가 로그인 페이지에서 올바른 정보를 입력하고 대시보드로 이동하는 과정을 테스트.
 
-### Making a Progressive Web App
+```js
+const { Builder, By, Key } = require('selenium-webdriver');
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+async function loginTest() {
+  const driver = await new Builder().forBrowser('chrome').build();
+  try {
+    await driver.get('http://localhost:3000/login'); // 로그인 페이지
+    await driver.findElement(By.name('email')).sendKeys('user@example.com');
+    await driver.findElement(By.name('password')).sendKeys('password123', Key.RETURN);
 
-### Advanced Configuration
+    const title = await driver.getTitle();
+    console.assert(title === 'Dashboard', 'Login failed!');
+  } finally {
+    await driver.quit();
+  }
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+loginTest();
+```
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## E2E 테스팅 도구 Selenium
 
-### `npm run build` fails to minify
+## Selenium이란?
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Selenium은 웹 애플리케이션의 **End-to-End(E2E) 테스트**를 자동화하기 위한 도구입니다. 웹 브라우저를 제어하여 사용자가 실제로 웹사이트를 사용하는 것처럼 다양한 테스트를 실행할 수 있도록 설계되었습니다. Selenium은 다양한 언어, 브라우저, 플랫폼에서 사용할 수 있는 강력한 기능을 제공합니다.
+
+---
+
+### 주요 기능
+
+1. **브라우저 자동화**
+   - Selenium은 브라우저를 자동으로 실행하고, 웹 요소와 상호작용하며 테스트를 수행할 수 있습니다.
+   - 클릭, 입력, 스크롤 등 사용자의 행동을 시뮬레이션할 수 있습니다.
+
+2. **다중 브라우저 지원**
+   - Selenium은 다양한 브라우저에서 테스트를 실행할 수 있습니다.
+     - 지원 브라우저: Chrome, Firefox, Safari, Edge, Opera 등.
+
+3. **다양한 프로그래밍 언어 지원**
+   - Selenium은 여러 프로그래밍 언어로 작성된 스크립트를 실행할 수 있습니다.
+     - 지원 언어: Java, Python, C#, Ruby, JavaScript, Kotlin 등.
+
+4. **멀티 플랫폼 지원**
+   - Windows, macOS, Linux 등 다양한 운영체제에서 작동합니다.
+
+5. **병렬 테스트**
+   - 여러 테스트를 병렬로 실행하여 테스트 시간을 단축할 수 있습니다.
+
+6. **헤드리스 브라우저 테스트**
+   - 사용자 인터페이스 없이 브라우저를 백그라운드에서 실행하는 테스트를 지원합니다.
+     - 예: Chrome Headless, Firefox Headless.
+
+---
+
+### Selenium의 구성 요소
+
+1. **Selenium WebDriver**
+   - 브라우저를 프로그래밍 언어로 제어할 수 있도록 도와주는 API.
+   - 가장 널리 사용되는 Selenium의 주요 구성 요소.
+
+2. **Selenium IDE**
+   - 브라우저 확장 프로그램으로 제공되며, 사용자가 브라우저에서 수행한 동작을 기록하고 이를 테스트 스크립트로 변환.
+   - 테스트 초보자에게 적합.
+
+3. **Selenium Grid**
+   - 분산된 환경에서 병렬로 테스트를 실행할 수 있는 도구.
+   - 여러 머신에서 동시에 테스트를 실행하여 효율성을 높임.
+
+4. **Selenium RC (Remote Control)**
+   - 과거에 사용되던 구성 요소로, WebDriver가 등장하면서 점차 사용되지 않음.
+
+---
+
+### Selenium의 장점
+
+1. **오픈 소스**
+   - 무료로 사용 가능하며, 커뮤니티 지원이 활발합니다.
+
+2. **다양한 언어와 브라우저 지원**
+   - 개발자가 선호하는 언어와 브라우저를 선택해 작업할 수 있습니다.
+
+3. **확장성**
+   - 다양한 플러그인과 라이브러리를 통해 기능을 확장할 수 있습니다.
+
+4. **유연한 테스트 환경**
+   - 클라우드 기반 테스트 플랫폼(예: BrowserStack, Sauce Labs)과의 통합 가능.
+
+---
+
+### Selenium의 단점
+
+1. **모바일 앱 테스트 제한**
+   - Selenium은 웹 애플리케이션에 최적화되어 있으며, 모바일 앱 테스트는 지원하지 않음.
+   - 대신 Appium과 같은 도구를 사용해야 함.
+
+2. **고급 설정의 복잡성**
+   - 테스트 환경 설정 및 스크립트 작성이 초보자에게 어려울 수 있음.
+
+3. **UI 변경 시 유지보수 비용**
+   - 웹 요소의 구조가 변경되면 테스트 스크립트를 수정해야 함.
+
+4. **보고 기능 부족**
+   - Selenium 자체적으로는 상세한 테스트 보고서를 제공하지 않음. 별도의 보고 라이브러리(예: Allure)를 사용해야 함.
+
+---
+
+### Selenium 사용 사례
+
+1. **웹 애플리케이션 기능 테스트**
+   - 사용자가 웹 애플리케이션을 사용하는 모든 과정을 자동화하여 기능 테스트 수행.
+
+2. **회귀 테스트**
+   - 새로운 코드 변경 후에도 기존 기능이 정상 작동하는지 확인.
+
+3. **크로스 브라우저 테스트**
+   - 여러 브라우저에서 애플리케이션의 동작을 테스트.
+
+4. **데이터 기반 테스트**
+   - 다양한 입력 데이터를 사용하여 테스트를 자동화.
+
+---
+
+### Selenium을 활용한 기본 워크플로우
+
+1. 테스트 환경 설정
+   - Selenium WebDriver와 프로그래밍 언어의 환경 구성.
+   - 브라우저 드라이버 다운로드(예: ChromeDriver, GeckoDriver).
+
+2. 테스트 스크립트 작성
+   - 테스트 시나리오를 코드로 작성.
+
+3. 테스트 실행
+   - 브라우저를 실행하고 테스트를 실행.
+
+4. 결과 확인
+   - 테스트 결과를 확인하고, 실패한 테스트를 분석.
+
+---
+
+Selenium은 웹 애플리케이션 테스트를 자동화하는 데 있어 강력한 도구입니다. 다양한 언어와 브라우저를 지원하며, 크로스 브라우저 테스트 및 회귀 테스트에 널리 사용됩니다.
+
+
+## 파일 위치 구조
+- __tests__에 테스트 코드를 유형별로 나눌것, 컴포넌트 및 함수 테스팅은 unit에 src 기준으로 폴더 구조에 맞게 위치 시키고 selenium은 e2e에 위치시킬 것
+```
+my-react-project/
+│
+├── src/                  # 리액트 소스 코드
+│   ├── components/       # 컴포넌트 코드
+│   └── App.js            # 메인 애플리케이션
+│
+├── __tests__/            # 컴포넌트 단위 테스트
+│   ├── unit/             # 컴포넌트 테스트
+│   │   ├── App.test.js
+│   │   ├── Header.test.js
+│   │
+│   └── e2e/                  # E2E 테스트
+│       ├── selenium/
+│       │   └── test.js       # Selenium 테스트
+│       ├── playwright/
+│           └── test.js       # Playwright 테스트
+│
+├── package.json          # 프로젝트 설정
+└── .github/              # GitHub Actions 워크플로
+```
